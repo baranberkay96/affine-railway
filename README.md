@@ -1,5 +1,7 @@
 # Deploy and Host AFFiNE with Railway
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/affine-027-docs-and-whiteboards?referralCode=20H68q)
+
 AFFiNE is an open-source workspace that combines docs, whiteboards and databases on one canvas. This community template runs the AFFiNE 0.27 self-hosted server on Railway with PostgreSQL (pgvector), Redis, a Manticore search indexer and a Railway Bucket for files, and creates your administrator account on first start.
 
 ## About Hosting AFFiNE
