@@ -1,0 +1,336 @@
+{
+  "name": "AFFiNE 0.27 Docs and Whiteboards",
+  "description": "Docs, whiteboards and databases in one workspace you own.",
+  "category": "Other",
+  "tags": [
+    "affine",
+    "notion-alternative",
+    "miro-alternative",
+    "knowledge-base",
+    "whiteboard",
+    "docs"
+  ],
+  "image": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/affine.svg",
+  "services": {
+    "AFFiNE": {
+      "icon": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/affine.svg",
+      "source": {
+        "repo": "baranberkay96/affine-railway",
+        "rootDirectory": "/services/affine"
+      },
+      "startCommand": null,
+      "preDeployCommand": [
+        "/app/railway/predeploy.sh"
+      ],
+      "preDeployTimeoutSeconds": 900,
+      "healthcheckPath": "/info",
+      "healthcheckTimeout": 300,
+      "restartPolicyType": "ALWAYS",
+      "numReplicas": 1,
+      "publicDomain": true,
+      "targetPort": 3010,
+      "tcpProxy": null,
+      "volume": {
+        "mountPath": "/root/.affine/storage"
+      },
+      "variables": {
+        "PORT": {
+          "defaultValue": "3010",
+          "description": "Port the AFFiNE server listens on (domain and healthcheck).",
+          "required": false
+        },
+        "AFFINE_SERVER_PORT": {
+          "defaultValue": "3010",
+          "description": "Same port, AFFiNE's own setting.",
+          "required": false
+        },
+        "LISTEN_ADDR": {
+          "defaultValue": "::",
+          "description": "Listen on IPv4 and IPv6.",
+          "required": false
+        },
+        "AFFINE_SERVER_HOST": {
+          "defaultValue": "${{RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public host name. Change for a custom domain.",
+          "required": true
+        },
+        "AFFINE_SERVER_HTTPS": {
+          "defaultValue": "true",
+          "description": "Railway serves the domain over HTTPS.",
+          "required": false
+        },
+        "AFFINE_SERVER_EXTERNAL_URL": {
+          "defaultValue": "https://${{RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public base URL used in links and emails. Change for a custom domain.",
+          "required": true
+        },
+        "AFFINE_SERVER_NAME": {
+          "defaultValue": "AFFiNE",
+          "description": "Server name shown when connecting from the desktop and mobile apps.",
+          "required": false
+        },
+        "DATABASE_URL": {
+          "defaultValue": "postgresql://${{Postgres.PGUSER}}:${{Postgres.PGPASSWORD}}@${{Postgres.RAILWAY_PRIVATE_DOMAIN}}:5432/${{Postgres.PGDATABASE}}",
+          "description": "Postgres with pgvector (private network).",
+          "required": true
+        },
+        "REDIS_SERVER_HOST": {
+          "defaultValue": "${{Redis.RAILWAY_PRIVATE_DOMAIN}}",
+          "description": "Redis host (cache, job queues, sync).",
+          "required": true
+        },
+        "REDIS_SERVER_PORT": {
+          "defaultValue": "6379",
+          "description": "Redis port.",
+          "required": false
+        },
+        "REDIS_SERVER_PASSWORD": {
+          "defaultValue": "${{Redis.REDIS_PASSWORD}}",
+          "description": "Redis password.",
+          "required": true
+        },
+        "AFFINE_INDEXER_ENABLED": {
+          "defaultValue": "true",
+          "description": "Server-side full-text search through the Indexer service (Manticore).",
+          "required": false
+        },
+        "AFFINE_INDEXER_SEARCH_ENDPOINT": {
+          "defaultValue": "http://${{Indexer.RAILWAY_PRIVATE_DOMAIN}}:9308",
+          "description": "Manticore HTTP endpoint (private network).",
+          "required": false
+        },
+        "AFFINE_PRIVATE_KEY_SEED": {
+          "defaultValue": "${{secret(64, \"abcdef0123456789\")}}",
+          "description": "Seed for the server's signing/encryption key (derived on every start). Never change it.",
+          "required": true
+        },
+        "AFFINE_ADMIN_EMAIL": {
+          "defaultValue": "",
+          "description": "Email of the first administrator, created automatically on first start. Used to sign in.",
+          "required": true
+        },
+        "AFFINE_ADMIN_PASSWORD": {
+          "defaultValue": "${{secret(24, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+          "description": "Password of the first administrator (generated). Change it after the first login.",
+          "required": true
+        },
+        "AFFINE_ALLOW_SIGNUP": {
+          "defaultValue": "false",
+          "description": "Default for open registration. Admins can change it later in Admin > Settings.",
+          "required": false
+        },
+        "AFFINE_COPILOT_ENABLED": {
+          "defaultValue": "true",
+          "description": "Enable AFFiNE AI; workspace owners add their own provider keys (BYOK).",
+          "required": false
+        },
+        "AFFINE_STORAGE": {
+          "defaultValue": "bucket",
+          "description": "'bucket' = workspace files in the Railway Bucket, 'fs' = everything on the service volume.",
+          "required": false
+        },
+        "BUCKET_NAME": {
+          "defaultValue": "${{Bucket.BUCKET}}",
+          "description": "Railway Bucket name.",
+          "required": true
+        },
+        "BUCKET_ENDPOINT": {
+          "defaultValue": "${{Bucket.ENDPOINT}}",
+          "description": "Railway Bucket S3 endpoint.",
+          "required": true
+        },
+        "BUCKET_REGION": {
+          "defaultValue": "${{Bucket.REGION}}",
+          "description": "Railway Bucket region.",
+          "required": true
+        },
+        "BUCKET_ACCESS_KEY_ID": {
+          "defaultValue": "${{Bucket.ACCESS_KEY_ID}}",
+          "description": "Railway Bucket access key.",
+          "required": true
+        },
+        "BUCKET_SECRET_ACCESS_KEY": {
+          "defaultValue": "${{Bucket.SECRET_ACCESS_KEY}}",
+          "description": "Railway Bucket secret key.",
+          "required": true
+        },
+        "BUCKET_FORCE_PATH_STYLE": {
+          "defaultValue": "false",
+          "description": "Railway Buckets use virtual-hosted URLs; true only if the Bucket's Credentials tab says path-style.",
+          "required": false
+        },
+        "BUCKET_CORS_ENABLED": {
+          "defaultValue": "true",
+          "description": "Set the Bucket CORS rule in the pre-deploy step (browsers fetch files from presigned Bucket URLs).",
+          "required": false
+        },
+        "BUCKET_CORS_ORIGINS": {
+          "defaultValue": "*",
+          "description": "Allowed origins for GET/HEAD on presigned URLs (space-separated). '*' covers web, desktop and mobile apps.",
+          "required": false
+        },
+        "RAILWAY_DEPLOYMENT_DRAINING_SECONDS": {
+          "defaultValue": "30",
+          "description": "Time for open sync connections to close on redeploy.",
+          "required": false
+        }
+      }
+    },
+    "Indexer": {
+      "icon": "https://manticoresearch.com/logo.png",
+      "source": {
+        "image": "manticoresearch/manticore:10.1.0"
+      },
+      "startCommand": null,
+      "healthcheckPath": "/",
+      "healthcheckTimeout": 300,
+      "restartPolicyType": "ON_FAILURE",
+      "restartPolicyMaxRetries": 10,
+      "numReplicas": 1,
+      "publicDomain": false,
+      "targetPort": null,
+      "tcpProxy": null,
+      "volume": {
+        "mountPath": "/var/lib/manticore"
+      },
+      "variables": {
+        "PORT": {
+          "defaultValue": "9308",
+          "description": "Manticore HTTP port (healthcheck and AFFiNE).",
+          "required": false
+        },
+        "searchd_threads": {
+          "defaultValue": "4",
+          "description": "Search worker threads (default would follow the host's CPU count).",
+          "required": false
+        }
+      }
+    },
+    "Postgres": {
+      "icon": "https://devicons.railway.app/i/postgresql.svg",
+      "source": {
+        "image": "pgvector/pgvector:0.8.7-pg16"
+      },
+      "startCommand": null,
+      "healthcheckPath": null,
+      "healthcheckTimeout": null,
+      "restartPolicyType": "ON_FAILURE",
+      "restartPolicyMaxRetries": 10,
+      "publicDomain": false,
+      "targetPort": null,
+      "tcpProxy": null,
+      "volume": {
+        "mountPath": "/var/lib/postgresql/data"
+      },
+      "variables": {
+        "PGDATA": {
+          "defaultValue": "/var/lib/postgresql/data/pgdata",
+          "description": "Location where the database will be initialized",
+          "required": true
+        },
+        "PGHOST": {
+          "defaultValue": "${{RAILWAY_PRIVATE_DOMAIN}}",
+          "description": "Railway Private Domain Name.",
+          "required": true
+        },
+        "PGPORT": {
+          "defaultValue": "5432",
+          "description": "Port to connect to Postgres.",
+          "required": true
+        },
+        "PGUSER": {
+          "defaultValue": "${{ POSTGRES_USER }}",
+          "description": "Required variable for Data panel",
+          "required": true
+        },
+        "PGDATABASE": {
+          "defaultValue": "${{POSTGRES_DB}}",
+          "description": "Required variable for the data panel.",
+          "required": true
+        },
+        "PGPASSWORD": {
+          "defaultValue": "${{POSTGRES_PASSWORD}}",
+          "description": "Required variable for Data panel",
+          "required": true
+        },
+        "POSTGRES_DB": {
+          "defaultValue": "railway",
+          "description": "Default database created when image is started.",
+          "required": true
+        },
+        "DATABASE_URL": {
+          "defaultValue": "postgresql://${{PGUSER}}:${{POSTGRES_PASSWORD}}@${{RAILWAY_PRIVATE_DOMAIN}}:5432/${{PGDATABASE}}",
+          "description": "URL to connect to Postgres (private network).",
+          "required": true
+        },
+        "POSTGRES_USER": {
+          "defaultValue": "postgres",
+          "description": "User to connect to Postgres DB",
+          "required": true
+        },
+        "POSTGRES_PASSWORD": {
+          "defaultValue": "${{ secret(32, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\") }}",
+          "description": "Password to connect to DB",
+          "required": true
+        },
+        "RAILWAY_DEPLOYMENT_DRAINING_SECONDS": {
+          "defaultValue": "60",
+          "description": "Allow Postgres to cleanly shut down",
+          "required": true
+        }
+      }
+    },
+    "Redis": {
+      "icon": "https://cdn.sanity.io/images/sy1jschh/production/0ce0bfdcfbdbf69662b1116671f97c2dd788b655-157x157.svg",
+      "source": {
+        "image": "redis:8.2"
+      },
+      "startCommand": "/bin/sh -c \"rm -rf $RAILWAY_VOLUME_MOUNT_PATH/lost+found/ && exec docker-entrypoint.sh redis-server --requirepass $REDIS_PASSWORD --save 60 1 --dir $RAILWAY_VOLUME_MOUNT_PATH\"",
+      "healthcheckPath": null,
+      "healthcheckTimeout": null,
+      "restartPolicyType": "ON_FAILURE",
+      "restartPolicyMaxRetries": 10,
+      "publicDomain": false,
+      "targetPort": null,
+      "tcpProxy": null,
+      "volume": {
+        "mountPath": "/data"
+      },
+      "variables": {
+        "REDISHOST": {
+          "defaultValue": "${{RAILWAY_PRIVATE_DOMAIN}}",
+          "description": "Private network hostname of the Redis service, only resolvable from services in the same environment",
+          "required": true
+        },
+        "REDISPORT": {
+          "defaultValue": "6379",
+          "description": "Port that Redis listens on",
+          "required": true
+        },
+        "REDISUSER": {
+          "defaultValue": "default",
+          "description": "Username for authenticating with Redis",
+          "required": true
+        },
+        "REDIS_URL": {
+          "defaultValue": "redis://${{ REDISUSER }}:${{ REDIS_PASSWORD }}@${{ REDISHOST }}:${{ REDISPORT }}",
+          "description": "Connection string for connecting to Redis using the private network",
+          "required": true
+        },
+        "REDISPASSWORD": {
+          "defaultValue": "${{REDIS_PASSWORD}}",
+          "description": "Alias of REDIS_PASSWORD for clients that expect the unseparated name",
+          "required": true
+        },
+        "REDIS_PASSWORD": {
+          "defaultValue": "${{ secret(32, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\") }}",
+          "description": "Randomly generated password for authenticating with Redis",
+          "required": true
+        }
+      }
+    }
+  },
+  "buckets": [
+    "Bucket"
+  ]
+}
